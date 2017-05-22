@@ -1,3 +1,10 @@
+'''
+tecancavro.syringe
+
+Contains the `Syringe` base class that may be subclassed for specific
+syringe models.
+
+'''
 import time
 
 try:
@@ -8,14 +15,14 @@ except:
 
 
 class SyringeError(Exception):
-    """
+    '''
     Error raise when a Cavro pump returns a non-zero error code.
 
     Args:
         `error_code` (int): the error code returned by the cavro pump
         `error_dict` (dict): dictionary of model-specific error msgs, keyed
                              by error code
-    """
+    '''
 
     def __init__(self, error_code, error_dict):
         super(SyringeError, self).__init__(self)
@@ -31,15 +38,15 @@ class SyringeError(Exception):
 
 
 class SyringeTimeout(Exception):
-    """ Raised when a syringe wait command times out """
+    ''' Raised when a syringe wait command times out '''
     pass
 
 
 class Syringe(object):
-    """
+    '''
     General syringe class that may be subclassed for specific syringe models
     or advanced functionality.
-    """
+    '''
 
     ERROR_DICT = {
         1: 'Initialization Error',
@@ -67,7 +74,7 @@ class Syringe(object):
         return data, ready
 
     def _checkStatus(self, status_byte):
-        """
+        '''
         Parses a bit string representation of a Tecan API status byte for
         potential error codes (and subsequently raises `SyringeError`) and
         returns the status code as a boolean (True = ready, False = busy).
@@ -75,7 +82,7 @@ class Syringe(object):
         Defaults to the error code dictionary (`ERROR_DICT`) defined in the
         `Syringe` class; however, this can be overridden in a subclass.
 
-        """
+        '''
         error_code = int(status_byte[4:8], 2)
         ready = int(status_byte[2])
         if ready == 1:
@@ -93,11 +100,11 @@ class Syringe(object):
         return ready, error_code
 
     def _checkReady(self):
-        """
+        '''
         Checks to see if the syringe is ready to accept a new command (i.e.
         is not busy). Returns `True` if it is ready, or `False` if it is not.
 
-        """
+        '''
         if self._ready:
             return True
         try:
@@ -110,14 +117,14 @@ class Syringe(object):
                 raise e
 
     def _waitReady(self, polling_interval=0.3, timeout=10, delay=None):
-        """
+        '''
         Waits for the syringe to be ready to accept a command
 
         Kwargs:
             `polling_interval` (int): frequency of polling in seconds
             `timeout` (int): max wait time in seconds
 
-        """
+        '''
         if delay:
             sleep(delay)
         start = time.time()

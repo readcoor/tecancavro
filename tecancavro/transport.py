@@ -1,5 +1,5 @@
-"""
-transport.py
+'''
+tecancavro.transport
 
 Contains transport layer subclasses of the `TecanAPI` class, which provides
 Tecan OEM API frame handling. All subclasses expose instance method `sendRcv`,
@@ -11,7 +11,7 @@ which sends a command string (`cmd`) and returns a dictionary containing the
                   on the same RS-232 port (i.e., daisy-chaining) by sharing
                   a single serial port instance.
 
-"""
+'''
 
 import glob
 import sys
@@ -41,13 +41,13 @@ from .tecanapi import TecanAPI, TecanAPITimeout
 # From http://stackoverflow.com/questions/12090503/
 #      listing-available-com-ports-with-python
 def listSerialPorts():
-    """Lists serial ports
+    '''Lists serial ports
 
     :raises EnvironmentError:
         On unsupported or unknown platforms
     :returns:
         A list of available serial ports
-    """
+    '''
     if sys.platform.startswith('win'):
         ports = ['COM' + str(i + 1) for i in range(256)]
 
@@ -73,12 +73,12 @@ def listSerialPorts():
 
 
 class TecanAPISerial(TecanAPI):
-    """
+    '''
     Wraps the TecanAPI class to provide serial communication encapsulation
     and management for the Tecan OEM API. Maps devices to a state-monitored
     dictionary, `ser_mapping`, which allows multiple Tecan devices to
     share a serial port (provided that the serial params are the same).
-    """
+    '''
 
     ser_mapping = {}
 
@@ -152,12 +152,12 @@ class TecanAPISerial(TecanAPI):
         return self.parseFrame(raw_data)
 
     def _registerSer(self):
-        """
+        '''
         Checks to see if another TecanAPISerial instance has registered the
         same serial port in `ser_mapping`. If there is a conflict, checks to
         see if the parameters match, and if they do, shares the connection.
         Otherwise it raises a `serial.SerialException`.
-        """
+        '''
         reg = TecanAPISerial.ser_mapping
         port = self.ser_port
         if self.ser_port not in reg:
@@ -178,9 +178,9 @@ class TecanAPISerial(TecanAPI):
         self._ser = reg[port]['_ser']
 
     def __del__(self):
-        """
+        '''
         Cleanup serial port registration on delete
-        """
+        '''
         port_reg = TecanAPISerial.ser_mapping[self.ser_port]
         try:
             dev_list = port_reg['_devices']
@@ -194,10 +194,10 @@ class TecanAPISerial(TecanAPI):
 
 
 class TecanAPINode(TecanAPI):
-    """
+    '''
     `TecanAPI` subclass for node-based serial bridge communication.
     Tailored for the ARC GT sequencing platform.
-    """
+    '''
 
     def __init__(self, tecan_addr, node_addr, response_len=20,
                  max_attempts=5):
