@@ -29,7 +29,7 @@ class CavroXE(Syringe):
     end validation and convenience functions
     '''
 
-    DIR_DICT = {'CW': ('I','O','B'), 'CCW': ('O','I','B')}
+    DIR_DICT = {'CW': ('I','B','O'), 'CCW': ('O','B','I')}
 
     '''
     Need to modify this to be from 20-600
@@ -42,8 +42,8 @@ class CavroXE(Syringe):
                    37: 16, 38: 14, 39: 12, 40: 10}
     '''
 
-    def __init__(self, com_link, num_ports=3, syringe_ul=1000, direction='CW', waste_port=3,
-                 debug=False, debug_log_path='.'):
+    def __init__(self, com_link, num_ports=3, syringe_ul=1000, direction='CW',
+                 waste_port=3, debug=False, debug_log_path='.'):
         '''
         Object initialization function.
         Args:

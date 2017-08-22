@@ -8,6 +8,8 @@ layer encapsulation (e.g. serial encasulation).
 
 '''
 
+from itertools import cycle
+
 
 class TecanAPITimeout(Exception):
     '''
@@ -22,7 +24,7 @@ class TecanAPI(object):
     def __init__(self, addr):
         self.START_BYTE = 0x02
         self.STOP_BYTE = 0x03
-        self.SEQ_NUM = b'111'
+        self._seq_num = b'111'
         self.addr = addr + 0x31  # Add 0x31 to compute hex address equiv.
         self._cmd = 0
 
@@ -81,7 +83,7 @@ class TecanAPI(object):
 
     def _buildFrame(self, repeat=False):
         if repeat:
-            seq_byte = int(b'00111' + self.SEQ_NUM, 2)
+            seq_byte = int(b'00111' + self._seq_num, 2)
         else:
             seq_byte = int(b'00110' + next(self.rotateSeqNum()), 2)
         frame_list = [self.START_BYTE, self.addr, seq_byte] + \
@@ -137,11 +139,11 @@ class TecanAPI(object):
 
     def rotateSeqNum(self):
         '''
-        Generator function to rotate through possible Tecan API sequence
+        Rotates through possible Tecan API sequence
         numbers 1-7 and output a respective 3 bit str representation
         '''
-        seq_nums = [b'001', b'010', b'011', b'100', b'101', b'110', b'111']
-        while True:
-            for n in seq_nums:
-                self.SEQ_NUM = n
-                yield self.SEQ_NUM
+        self._sng = getattr(self, '_sng', None) or cycle(
+            [b'001', b'010', b'011', b'100', b'101', b'110', b'111']
+        )
+        self._seq_num = next(self._sng)
+        return self._seq_num
